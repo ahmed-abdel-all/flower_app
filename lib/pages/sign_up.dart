@@ -21,11 +21,32 @@ class _SignUPState extends State<SignUP> {
   var formKey = GlobalKey<FormState>();
 
   bool isPassword8Character = false;
+  bool isPasswordHas1Number = false;
+  bool hasLowerCase = false;
+  bool hasSpecialCharacter = false;
+  bool hasUpperCase = false;
+  
   onPasswordChange(String password) {
     isPassword8Character = false;
+    isPasswordHas1Number = false;
+    hasLowerCase = false;
+    hasSpecialCharacter = false;
+    hasUpperCase = false;
     setState(() {
       if (password.contains(RegExp(r'.{8,}'))) {
         isPassword8Character = true;
+      }
+      if (password.contains(RegExp(r'[0-9]'))) {
+        isPasswordHas1Number = true;
+      }
+      if (password.contains(RegExp(r'[a-z]'))) {
+        hasLowerCase = true;
+      }
+      if (password.contains(RegExp(r'[A-Z]'))) {
+        hasUpperCase = true;
+      }
+      if (password.contains(RegExp(r'[!@#$%^&*(),.?":{}|<>]'))) {
+        hasSpecialCharacter = true;
       }
     });
   }
@@ -159,7 +180,9 @@ class _SignUPState extends State<SignUP> {
                         height: 20,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white,
+                            color: isPasswordHas1Number
+                                ? Colors.green
+                                : Colors.white,
                             border: Border.all(
                               color: Colors.grey,
                             )),
@@ -182,7 +205,7 @@ class _SignUPState extends State<SignUP> {
                         height: 20,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white,
+                            color: hasUpperCase ? Colors.green : Colors.white,
                             border: Border.all(
                               color: Colors.grey,
                             )),
@@ -205,7 +228,7 @@ class _SignUPState extends State<SignUP> {
                         height: 20,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white,
+                            color: hasLowerCase ? Colors.green : Colors.white,
                             border: Border.all(
                               color: Colors.grey,
                             )),
@@ -228,7 +251,9 @@ class _SignUPState extends State<SignUP> {
                         height: 20,
                         decoration: BoxDecoration(
                             shape: BoxShape.circle,
-                            color: Colors.white,
+                            color: hasSpecialCharacter
+                                ? Colors.green
+                                : Colors.white,
                             border: Border.all(
                               color: Colors.grey,
                             )),
