@@ -17,7 +17,8 @@ class _SignInState extends State<SignIn> {
   final emailController = TextEditingController();
 
   final passwordController = TextEditingController();
-
+  bool isLoading = false;
+  bool isNotVisible = true;
   @override
   void dispose() {
     // TODO: implement dispose
@@ -51,7 +52,12 @@ class _SignInState extends State<SignIn> {
                   controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
-                  decoration: decorationTextFeild,
+                  decoration: decorationTextFeild.copyWith(
+                    suffixIcon: const Icon(
+                      Icons.email,
+                      color: Color.fromARGB(255, 124, 124, 124),
+                    ),
+                  ),
                 ),
                 const SizedBox(
                   height: 10,
@@ -60,9 +66,20 @@ class _SignInState extends State<SignIn> {
                 TextField(
                   controller: passwordController,
                   keyboardType: TextInputType.visiblePassword,
-                  obscureText: true,
+                  obscureText: isNotVisible,
                   decoration: decorationTextFeild.copyWith(
-                      hintText: 'Enter Your password'),
+                    hintText: 'Enter Your password',
+                    suffixIcon: IconButton(
+                        onPressed: () {
+                          setState(() {
+                            isNotVisible = !isNotVisible;
+                          });
+                        },
+                        color: const Color.fromARGB(255, 124, 124, 124),
+                        icon: isNotVisible
+                            ? const Icon(Icons.visibility)
+                            : const Icon(Icons.visibility_off)),
+                  ),
                 ),
                 const SizedBox(
                   height: 20,
@@ -72,9 +89,10 @@ class _SignInState extends State<SignIn> {
                 ElevatedButton(
                   onPressed: () async {
                     try {
+                      setState(() {
+                        isLoading = true;
+                      });
                       await loginUser();
-                      if (!mounted) return;
-                      showSnackBar(context, "Success Log In");
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
                         showSnackBar(context, 'No user found for that email.');
@@ -85,6 +103,9 @@ class _SignInState extends State<SignIn> {
                     } catch (e) {
                       showSnackBar(context, e.toString());
                     }
+                    setState(() {
+                      isLoading = false;
+                    });
                   },
                   style: ButtonStyle(
                     backgroundColor: const MaterialStatePropertyAll(btnGreen),
@@ -92,10 +113,14 @@ class _SignInState extends State<SignIn> {
                     shape: MaterialStatePropertyAll(RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(8))),
                   ),
-                  child: const Text(
-                    'Sign In',
-                    style: TextStyle(fontSize: 20),
-                  ),
+                  child: isLoading
+                      ? const CircularProgressIndicator(
+                          color: Colors.white,
+                        )
+                      : const Text(
+                          'Sign In',
+                          style: TextStyle(fontSize: 20),
+                        ),
                 ),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,

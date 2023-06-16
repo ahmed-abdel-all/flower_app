@@ -132,17 +132,18 @@ class _SignUPState extends State<SignUP> {
                     keyboardType: TextInputType.visiblePassword,
                     obscureText: isNotVisible ? true : false,
                     decoration: decorationTextFeild.copyWith(
-                        hintText: 'Enter Your password',
-                        suffixIcon: IconButton(
-                            onPressed: () {
-                              setState(() {
-                                isNotVisible = !isNotVisible;
-                              });
-                            },
-                            color: const Color.fromARGB(255, 124, 124, 124),
-                            icon: isNotVisible
-                                ? const Icon(Icons.visibility)
-                                : const Icon(Icons.visibility_off))),
+                      hintText: 'Enter Your password',
+                      suffixIcon: IconButton(
+                          onPressed: () {
+                            setState(() {
+                              isNotVisible = !isNotVisible;
+                            });
+                          },
+                          color: const Color.fromARGB(255, 124, 124, 124),
+                          icon: isNotVisible
+                              ? const Icon(Icons.visibility)
+                              : const Icon(Icons.visibility_off)),
+                    ),
                   ),
                   const SizedBox(
                     height: 5,

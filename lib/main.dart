@@ -3,7 +3,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flower_app/pages/home.dart';
 import 'package:flower_app/pages/sign_in.dart';
-import 'package:flower_app/pages/sign_up.dart';
 import 'package:flower_app/provider/cart_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -29,7 +28,14 @@ class MyApp extends StatelessWidget {
         home: StreamBuilder(
           stream: FirebaseAuth.instance.authStateChanges(),
           builder: (context, snapshot) {
-            if (snapshot.hasData) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                  child: CircularProgressIndicator(
+                color: Colors.white,
+              ));
+            } else if (snapshot.hasError) {
+              return showSnackBar(context, "Something went wrong");
+            } else if (snapshot.hasData) {
               return const Home();
             } else {
               return const SignIn();
