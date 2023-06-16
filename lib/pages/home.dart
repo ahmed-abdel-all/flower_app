@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flower_app/model/item.dart';
 import 'package:flower_app/pages/details_screen.dart';
 import 'package:flower_app/shared/colors.dart';
@@ -48,7 +49,9 @@ class Home extends StatelessWidget {
                 ListTile(
                   title: const Text("Logout"),
                   leading: const Icon(Icons.exit_to_app),
-                  onTap: () {},
+                  onTap: () async{
+                    await FirebaseAuth.instance.signOut();
+                  },
                 ),
               ],
             ),

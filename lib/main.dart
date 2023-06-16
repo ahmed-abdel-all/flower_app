@@ -1,4 +1,8 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flower_app/helper/show_snack_bar.dart';
+import 'package:flower_app/pages/home.dart';
+import 'package:flower_app/pages/sign_in.dart';
 import 'package:flower_app/pages/sign_up.dart';
 import 'package:flower_app/provider/cart_provider.dart';
 import 'package:flutter/material.dart';
@@ -20,9 +24,18 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider(
       create: (context) => CartProvider(),
-      child:  const MaterialApp(
+      child: MaterialApp(
         debugShowCheckedModeBanner: false,
-        home: SignUP(),
+        home: StreamBuilder(
+          stream: FirebaseAuth.instance.authStateChanges(),
+          builder: (context, snapshot) {
+            if (snapshot.hasData) {
+              return const Home();
+            } else {
+              return const SignIn();
+            }
+          },
+        ),
       ),
     );
   }

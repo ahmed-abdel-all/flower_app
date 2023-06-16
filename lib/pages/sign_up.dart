@@ -1,5 +1,5 @@
-import 'package:email_validator/email_validator.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import '../constants.dart';
 import '../shared/colors.dart';
@@ -14,7 +14,6 @@ class SignUP extends StatefulWidget {
 
 class _SignUPState extends State<SignUP> {
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
   bool isLoading = false;
   bool isNotVisible = true;
@@ -25,7 +24,7 @@ class _SignUPState extends State<SignUP> {
   bool hasLowerCase = false;
   bool hasSpecialCharacter = false;
   bool hasUpperCase = false;
-  
+
   onPasswordChange(String password) {
     isPassword8Character = false;
     isPasswordHas1Number = false;
@@ -279,6 +278,13 @@ class _SignUPState extends State<SignUP> {
                           isLoading = true;
                           setState(() {});
                           await registerUser();
+                          if (!mounted) return;
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const SignIn(),
+                            ),
+                          );
                         } on FirebaseAuthException catch (e) {
                           if (e.code == 'weak-password') {
                             showSnackBar(
@@ -349,15 +355,6 @@ class _SignUPState extends State<SignUP> {
             ),
           ),
         ),
-      ),
-    );
-  }
-
-  void showSnackBar(BuildContext context, String message) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(
-        content: Text(message),
-        action: SnackBarAction(label: 'Close', onPressed: () {}),
       ),
     );
   }

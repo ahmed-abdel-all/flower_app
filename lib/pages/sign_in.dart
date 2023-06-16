@@ -1,11 +1,30 @@
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flower_app/pages/sign_up.dart';
 import 'package:flutter/material.dart';
 
 import '../constants.dart';
 import '../shared/colors.dart';
 
-class SignIn extends StatelessWidget {
+class SignIn extends StatefulWidget {
   const SignIn({super.key});
+
+  @override
+  State<SignIn> createState() => _SignInState();
+}
+
+class _SignInState extends State<SignIn> {
+  final emailController = TextEditingController();
+
+  final passwordController = TextEditingController();
+
+  @override
+  void dispose() {
+    // TODO: implement dispose
+    emailController.dispose();
+    passwordController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +46,9 @@ class SignIn extends StatelessWidget {
                 const SizedBox(
                   height: 30,
                 ),
+                //email
                 TextField(
+                  controller: emailController,
                   keyboardType: TextInputType.emailAddress,
                   obscureText: false,
                   decoration: decorationTextFeild,
@@ -35,7 +56,9 @@ class SignIn extends StatelessWidget {
                 const SizedBox(
                   height: 10,
                 ),
+                //password
                 TextField(
+                  controller: passwordController,
                   keyboardType: TextInputType.visiblePassword,
                   obscureText: true,
                   decoration: decorationTextFeild.copyWith(
@@ -44,8 +67,25 @@ class SignIn extends StatelessWidget {
                 const SizedBox(
                   height: 20,
                 ),
+
+                // sign up btn
                 ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () async {
+                    try {
+                      await loginUser();
+                      if (!mounted) return;
+                      showSnackBar(context, "Success Log In");
+                    } on FirebaseAuthException catch (e) {
+                      if (e.code == 'user-not-found') {
+                        showSnackBar(context, 'No user found for that email.');
+                      } else if (e.code == 'wrong-password') {
+                        showSnackBar(
+                            context, 'Wrong password provided for that user.');
+                      }
+                    } catch (e) {
+                      showSnackBar(context, e.toString());
+                    }
+                  },
                   style: ButtonStyle(
                     backgroundColor: const MaterialStatePropertyAll(btnGreen),
                     padding: const MaterialStatePropertyAll(EdgeInsets.all(12)),
@@ -91,5 +131,10 @@ class SignIn extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  Future<void> loginUser() async {
+    final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: emailController.text, password: passwordController.text);
   }
 }
