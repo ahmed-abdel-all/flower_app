@@ -12,22 +12,23 @@ class Home extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final user = FirebaseAuth.instance.currentUser!;
     return Scaffold(
       drawer: Drawer(
         child: Column(
           children: [
-            const UserAccountsDrawerHeader(
-              decoration: BoxDecoration(
+            UserAccountsDrawerHeader(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/test.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/profile.jpg'),
+                backgroundImage: NetworkImage(user.photoURL!),
               ),
-              accountName: Text('Ahmed Abdo'),
-              accountEmail: Text('ahmedabdo@gmal.com'),
+              accountName: Text(user.displayName!),
+              accountEmail: Text(user.email!),
             ),
             Column(
               children: [
@@ -49,7 +50,7 @@ class Home extends StatelessWidget {
                 ListTile(
                   title: const Text("Logout"),
                   leading: const Icon(Icons.exit_to_app),
-                  onTap: () async{
+                  onTap: () async {
                     await FirebaseAuth.instance.signOut();
                   },
                 ),
@@ -68,7 +69,7 @@ class Home extends StatelessWidget {
       appBar: AppBar(
         backgroundColor: appbarGreen,
         title: const Text('Home'),
-        actions: const[CustomActionBar()],
+        actions: const [CustomActionBar()],
       ),
       body: Padding(
         padding: const EdgeInsets.only(top: 22),

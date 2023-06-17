@@ -1,7 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flower_app/helper/show_snack_bar.dart';
+import 'package:flower_app/pages/forget_password.dart';
 import 'package:flower_app/pages/sign_up.dart';
+import 'package:flower_app/provider/google_signin.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:provider/provider.dart';
 
 import '../constants.dart';
 import '../shared/colors.dart';
@@ -15,7 +19,6 @@ class SignIn extends StatefulWidget {
 
 class _SignInState extends State<SignIn> {
   final emailController = TextEditingController();
-
   final passwordController = TextEditingController();
   bool isLoading = false;
   bool isNotVisible = true;
@@ -29,6 +32,7 @@ class _SignInState extends State<SignIn> {
 
   @override
   Widget build(BuildContext context) {
+    final signInGoogle = Provider.of<GoogleSignInProvider>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appbarGreen,
@@ -122,6 +126,27 @@ class _SignInState extends State<SignIn> {
                           style: TextStyle(fontSize: 20),
                         ),
                 ),
+                const SizedBox(
+                  height: 5,
+                ),
+                TextButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const ForgetPassword(),
+                      ),
+                    );
+                  },
+                  child: const Text(
+                    'Forget Password?',
+                    style: TextStyle(
+                      decoration: TextDecoration.underline,
+                      fontSize: 18,
+                    ),
+                  ),
+                ),
+
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
@@ -149,6 +174,46 @@ class _SignInState extends State<SignIn> {
                       ),
                     ),
                   ],
+                ),
+                SizedBox(
+                  width: 300,
+                  child: Row(
+                    children: const [
+                      Expanded(
+                        child: Divider(
+                          thickness: 1,
+                        ),
+                      ),
+                      Text(
+                        ' OR ',
+                        style: TextStyle(fontSize: 18),
+                      ),
+                      Expanded(
+                        child: Divider(
+                          thickness: 1,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                GestureDetector(
+                  onTap: () {
+                    signInGoogle.googlelogin();
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.only(top: 16),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: appbarGreen),
+                      shape: BoxShape.circle,
+                    ),
+                    child: SvgPicture.asset(
+                      'assets/images/google.svg',
+                      color: Colors.green,
+                      height: 35,
+                    ),
+                  ),
                 )
               ],
             ),

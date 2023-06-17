@@ -4,9 +4,11 @@ import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flower_app/pages/home.dart';
 import 'package:flower_app/pages/sign_in.dart';
 import 'package:flower_app/provider/cart_provider.dart';
+import 'package:flower_app/provider/google_signin.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
+import 'pages/verify_email.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -21,8 +23,15 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => CartProvider(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider(
+          create: (context) => CartProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => GoogleSignInProvider(),
+        )
+      ],
       child: MaterialApp(
         debugShowCheckedModeBanner: false,
         home: StreamBuilder(
@@ -36,7 +45,7 @@ class MyApp extends StatelessWidget {
             } else if (snapshot.hasError) {
               return showSnackBar(context, "Something went wrong");
             } else if (snapshot.hasData) {
-              return const Home();
+              return const VerifyEmailPage();
             } else {
               return const SignIn();
             }
