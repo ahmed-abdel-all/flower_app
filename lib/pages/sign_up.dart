@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flutter/material.dart';
@@ -15,6 +16,10 @@ class SignUP extends StatefulWidget {
 class _SignUPState extends State<SignUP> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
+  final userNameController = TextEditingController();
+  final ageController = TextEditingController();
+  final titleController = TextEditingController();
+
   bool isLoading = false;
   bool isNotVisible = true;
   var formKey = GlobalKey<FormState>();
@@ -24,6 +29,7 @@ class _SignUPState extends State<SignUP> {
   bool hasLowerCase = false;
   bool hasSpecialCharacter = false;
   bool hasUpperCase = false;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   onPasswordChange(String password) {
     isPassword8Character = false;
@@ -55,6 +61,9 @@ class _SignUPState extends State<SignUP> {
     // TODO: implement dispose
     emailController.dispose();
     passwordController.dispose();
+    userNameController.dispose();
+    titleController.dispose();
+    ageController.dispose();
     super.dispose();
   }
 
@@ -82,6 +91,7 @@ class _SignUPState extends State<SignUP> {
                   ),
                   // username
                   TextField(
+                    controller: userNameController,
                     keyboardType: TextInputType.text,
                     obscureText: false,
                     decoration: decorationTextFeild.copyWith(
@@ -95,7 +105,40 @@ class _SignUPState extends State<SignUP> {
                   const SizedBox(
                     height: 10,
                   ),
-                  // Email
+                  // age
+                  TextField(
+                    controller: ageController,
+                    keyboardType: TextInputType.number,
+                    obscureText: false,
+                    decoration: decorationTextFeild.copyWith(
+                      hintText: 'Enter Your Age: ',
+                      suffixIcon: const Icon(
+                        Icons.person_pin_rounded,
+                        color: Color.fromARGB(255, 124, 124, 124),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+                  // title
+                  TextField(
+                    controller: titleController,
+                    keyboardType: TextInputType.text,
+                    obscureText: false,
+                    decoration: decorationTextFeild.copyWith(
+                      hintText: 'Enter Your Title: ',
+                      suffixIcon: const Icon(
+                        Icons.title,
+                        color: Color.fromARGB(255, 124, 124, 124),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 10,
+                  ),
+
+                  //Email
                   TextFormField(
                     validator: (email) {
                       return email!.contains(RegExp(
@@ -366,5 +409,16 @@ class _SignUPState extends State<SignUP> {
       email: emailController.text,
       password: passwordController.text,
     );
+    users
+        .doc(credential.user!.uid)
+        .set({
+          'username': userNameController.text, // John Doe
+          'age': ageController.text, // 42
+          'title': titleController.text,
+          'email': emailController.text,
+          'password': passwordController.text // Stokes and Sons
+        })
+        .then((value) => print("User Added"))
+        .catchError((error) => print("Failed to add user: $error"));
   }
 }

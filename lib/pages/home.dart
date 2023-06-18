@@ -1,14 +1,13 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flower_app/model/item.dart';
 import 'package:flower_app/pages/details_screen.dart';
+import 'package:flower_app/pages/profile_page.dart';
 import 'package:flower_app/shared/colors.dart';
 import 'package:flower_app/widgets/custom_action_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/cart_provider.dart';
-
-
-
 
 class Home extends StatelessWidget {
   const Home({super.key});
@@ -16,6 +15,7 @@ class Home extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
+    // final username = FirebaseFirestore.instance.
     return Scaffold(
       drawer: Drawer(
         child: Column(
@@ -28,10 +28,10 @@ class Home extends StatelessWidget {
                 ),
               ),
               currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(user.photoURL!),
+                backgroundImage: NetworkImage(user.photoURL ?? "no Image"),
               ),
-              accountName: Text(user.displayName!),
-              accountEmail: Text(user.email!),
+              accountName: Text(user.displayName ?? "no name"),
+              accountEmail: Text(user.email ?? "No email"),
             ),
             Column(
               children: [
@@ -49,6 +49,16 @@ class Home extends StatelessWidget {
                   title: const Text("About"),
                   leading: const Icon(Icons.help_center),
                   onTap: () {},
+                ),
+                ListTile(
+                  title: const Text("Profile"),
+                  leading: const Icon(Icons.person),
+                  onTap: () {
+                    Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfilePage()));
+                  },
                 ),
                 ListTile(
                   title: const Text("Logout"),

@@ -41,6 +41,8 @@ dependencies:
   email_validator: '^2.1.16'
   google_sign_in: ^6.1.4
   flutter_svg: ^1.1.0
+  cloud_firestore: ^4.8.1
+  intl: ^0.18.1
 
 dev_dependencies:
   flutter_test:
