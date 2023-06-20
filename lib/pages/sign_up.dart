@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
@@ -25,7 +23,7 @@ class _SignUPState extends State<SignUP> {
   final userNameController = TextEditingController();
   final ageController = TextEditingController();
   final titleController = TextEditingController();
-   String? url;
+  String urll = '';
   bool isLoading = false;
   bool isNotVisible = true;
   var formKey = GlobalKey<FormState>();
@@ -372,15 +370,19 @@ class _SignUPState extends State<SignUP> {
                   // SignUp Button
                   ElevatedButton(
                     onPressed: () async {
-                      if (formKey.currentState!.validate() && chooseImage.imgName != null && chooseImage.imgPath != null) {
+                      if (formKey.currentState!.validate() &&
+                          chooseImage.imgName != null &&
+                          chooseImage.imgPath != null) {
                         try {
                           isLoading = true;
                           setState(() {});
-                          await registerUser();
+                         
                           final storageRef =
                               FirebaseStorage.instance.ref(chooseImage.imgName);
                           await storageRef.putFile(chooseImage.imgPath!);
-             url = await storageRef.getDownloadURL();          
+                          urll = await storageRef.getDownloadURL();
+               await registerUser();            
+                          
                           if (!mounted) return;
                           Navigator.pushReplacement(
                             context,
@@ -469,13 +471,12 @@ class _SignUPState extends State<SignUP> {
       password: passwordController.text,
     );
     users.doc(credential.user!.uid).set({
-      'imgUrl': url,
+      'imgUrl': urll,
       'username': userNameController.text, // John Doe
       'age': ageController.text, // 42
       'title': titleController.text,
       'email': emailController.text,
       'password': passwordController.text // Stokes and Sons
     });
-
   }
 }

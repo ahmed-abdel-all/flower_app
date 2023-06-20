@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flower_app/shared/colors.dart';
 import 'package:flutter/material.dart';
@@ -136,8 +135,9 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Center(
                 child: TextButton(
-                  onPressed: () {
-                    credential.delete();
+                  onPressed: ()  {
+                     credential.delete();
+                    if (!mounted) return;
                     Navigator.pop(context);
                     setState(() {});
                   },
