@@ -1,8 +1,11 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flower_app/shared/colors.dart';
 import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-
+import 'package:provider/provider.dart';
+import '../provider/choose_profile_img.dart';
 import '../shared/data_from_forestore.dart';
 
 class ProfilePage extends StatefulWidget {
@@ -17,6 +20,8 @@ class _ProfilePageState extends State<ProfilePage> {
 
   @override
   Widget build(BuildContext context) {
+    final chooseImage = Provider.of<ChooseProfileImg>(context);
+
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appbarGreen,
@@ -43,6 +48,51 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              Center(
+                child: Container(
+                  padding: const EdgeInsets.all(3),
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 194, 194, 194),
+                    shape: BoxShape.circle,
+                  ),
+                  child: Stack(
+                    children: [
+                      chooseImage.imgPath == null
+                          ? Image.asset(
+                              'assets/images/avatar.png',
+                              width: 150,
+                              height: 150,
+                            )
+                          : Container(
+                              width: 150,
+                              height: 150,
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                image: DecorationImage(
+                                    image: FileImage(chooseImage.imgPath!),
+                                    fit: BoxFit.cover),
+                              ),
+                            ),
+                      Positioned(
+                        bottom: -5,
+                        right: -12,
+                        child: IconButton(
+                          onPressed: () {
+                            chooseImage.uplaodImage(ImageSource.gallery);
+                          },
+                          icon: const Icon(
+                            Icons.add_a_photo,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+              const SizedBox(
+                height: 15,
+              ),
               Center(
                 child: Container(
                   padding: const EdgeInsets.all(12),

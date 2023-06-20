@@ -108,6 +108,7 @@ class _SignInState extends State<SignIn> {
                     } catch (e) {
                       showSnackBar(context, e.toString());
                     }
+
                     setState(() {
                       isLoading = false;
                     });

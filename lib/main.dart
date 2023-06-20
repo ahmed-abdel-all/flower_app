@@ -4,11 +4,12 @@ import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flower_app/pages/home.dart';
 import 'package:flower_app/pages/sign_in.dart';
 import 'package:flower_app/provider/cart_provider.dart';
+import 'package:flower_app/provider/choose_profile_img.dart';
 import 'package:flower_app/provider/google_signin.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'firebase_options.dart';
-import 'pages/verify_email.dart';
+// import 'pages/verify_email.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,6 +31,9 @@ class MyApp extends StatelessWidget {
         ),
         ChangeNotifierProvider(
           create: (context) => GoogleSignInProvider(),
+        ),
+        ChangeNotifierProvider(
+          create: (context) => ChooseProfileImg(),
         )
       ],
       child: MaterialApp(

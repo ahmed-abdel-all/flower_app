@@ -1,7 +1,13 @@
+import 'dart:io';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flower_app/helper/show_snack_bar.dart';
+import 'package:flower_app/provider/choose_profile_img.dart';
+import 'package:flower_app/widgets/custom_bottom_sheet.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import '../constants.dart';
 import '../shared/colors.dart';
 import 'sign_in.dart';
@@ -19,11 +25,10 @@ class _SignUPState extends State<SignUP> {
   final userNameController = TextEditingController();
   final ageController = TextEditingController();
   final titleController = TextEditingController();
-
+   String? url;
   bool isLoading = false;
   bool isNotVisible = true;
   var formKey = GlobalKey<FormState>();
-
   bool isPassword8Character = false;
   bool isPasswordHas1Number = false;
   bool hasLowerCase = false;
@@ -69,6 +74,7 @@ class _SignUPState extends State<SignUP> {
 
   @override
   Widget build(BuildContext context) {
+    final chooseImage = Provider.of<ChooseProfileImg>(context);
     return Scaffold(
       appBar: AppBar(
         backgroundColor: appbarGreen,
@@ -84,10 +90,59 @@ class _SignUPState extends State<SignUP> {
             child: Form(
               key: formKey,
               child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
+                // mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   const SizedBox(
                     height: 30,
+                  ),
+                  Container(
+                    padding: const EdgeInsets.all(3),
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 194, 194, 194),
+                      shape: BoxShape.circle,
+                    ),
+                    child: Stack(
+                      children: [
+                        chooseImage.imgPath == null
+                            ? Image.asset(
+                                'assets/images/avatar.png',
+                                width: 150,
+                                height: 150,
+                              )
+                            : Container(
+                                width: 150,
+                                height: 150,
+                                decoration: BoxDecoration(
+                                  shape: BoxShape.circle,
+                                  image: DecorationImage(
+                                      image: FileImage(chooseImage.imgPath!),
+                                      fit: BoxFit.cover),
+                                ),
+                              ),
+                        Positioned(
+                          bottom: -5,
+                          right: -12,
+                          child: IconButton(
+                            onPressed: () {
+                              // chooseImage.uplaodImage(ImageSource.camera);
+                              showModalBottomSheet(
+                                context: context,
+                                builder: (context) {
+                                  return const ShowModalBottomSheet();
+                                },
+                              );
+                            },
+                            icon: const Icon(
+                              Icons.add_a_photo,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 15,
                   ),
                   // username
                   TextField(
@@ -317,11 +372,15 @@ class _SignUPState extends State<SignUP> {
                   // SignUp Button
                   ElevatedButton(
                     onPressed: () async {
-                      if (formKey.currentState!.validate()) {
+                      if (formKey.currentState!.validate() && chooseImage.imgName != null && chooseImage.imgPath != null) {
                         try {
                           isLoading = true;
                           setState(() {});
                           await registerUser();
+                          final storageRef =
+                              FirebaseStorage.instance.ref(chooseImage.imgName);
+                          await storageRef.putFile(chooseImage.imgPath!);
+             url = await storageRef.getDownloadURL();          
                           if (!mounted) return;
                           Navigator.pushReplacement(
                             context,
@@ -393,7 +452,7 @@ class _SignUPState extends State<SignUP> {
                         ),
                       ),
                     ],
-                  )
+                  ),
                 ],
               ),
             ),
@@ -409,16 +468,14 @@ class _SignUPState extends State<SignUP> {
       email: emailController.text,
       password: passwordController.text,
     );
-    users
-        .doc(credential.user!.uid)
-        .set({
-          'username': userNameController.text, // John Doe
-          'age': ageController.text, // 42
-          'title': titleController.text,
-          'email': emailController.text,
-          'password': passwordController.text // Stokes and Sons
-        })
-        .then((value) => print("User Added"))
-        .catchError((error) => print("Failed to add user: $error"));
+    users.doc(credential.user!.uid).set({
+      'imgUrl': url,
+      'username': userNameController.text, // John Doe
+      'age': ageController.text, // 42
+      'title': titleController.text,
+      'email': emailController.text,
+      'password': passwordController.text // Stokes and Sons
+    });
+
   }
 }
