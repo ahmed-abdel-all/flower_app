@@ -1,9 +1,8 @@
 import 'dart:math';
 
-import 'package:flower_app/helper/show_snack_bar.dart';
 import 'package:flutter/material.dart';
 import 'dart:io';
-import 'package:path/path.dart' show basename, context;
+import 'package:path/path.dart' show basename;
 import 'package:image_picker/image_picker.dart';
 
 class ChooseProfileImg with ChangeNotifier {
@@ -20,10 +19,10 @@ class ChooseProfileImg with ChangeNotifier {
         imgName = "$random$imgName";
         print(imgName);
       } else {
-        showSnackBar(context as BuildContext, 'No Image Selected');
+        print('No Image Selected');
       }
     } catch (e) {
-      showSnackBar(context as BuildContext, e.toString());
+      print(e.toString());
     }
     notifyListeners();
   }

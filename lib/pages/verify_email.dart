@@ -23,7 +23,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     isEmailVerified = FirebaseAuth.instance.currentUser!.emailVerified;
 
@@ -63,7 +62,6 @@ class _VerifyEmailPageState extends State<VerifyEmailPage> {
 
   @override
   void dispose() {
-    // TODO: implement dispose
     timer?.cancel();
     super.dispose();
   }

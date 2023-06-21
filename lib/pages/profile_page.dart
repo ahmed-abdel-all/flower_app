@@ -1,4 +1,6 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flower_app/shared/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
@@ -6,6 +8,7 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import '../provider/choose_profile_img.dart';
 import '../shared/data_from_forestore.dart';
+import '../shared/user_image.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -16,6 +19,8 @@ class ProfilePage extends StatefulWidget {
 
 class _ProfilePageState extends State<ProfilePage> {
   final credential = FirebaseAuth.instance.currentUser!;
+  String? url;
+  CollectionReference users = FirebaseFirestore.instance.collection('users');
 
   @override
   Widget build(BuildContext context) {
@@ -57,27 +62,33 @@ class _ProfilePageState extends State<ProfilePage> {
                   child: Stack(
                     children: [
                       chooseImage.imgPath == null
-                          ? Image.asset(
-                              'assets/images/avatar.png',
-                              width: 150,
-                              height: 150,
-                            )
+                          ? const ImageUser()
                           : Container(
                               width: 150,
                               height: 150,
                               decoration: BoxDecoration(
                                 shape: BoxShape.circle,
                                 image: DecorationImage(
-                                    image: FileImage(chooseImage.imgPath!),
-                                    fit: BoxFit.cover),
+                                  image: FileImage(chooseImage.imgPath!),
+                                  fit: BoxFit.cover,
+                                ),
                               ),
                             ),
                       Positioned(
                         bottom: -5,
                         right: -12,
                         child: IconButton(
-                          onPressed: () {
-                            chooseImage.uplaodImage(ImageSource.gallery);
+                          onPressed: () async {
+                            await chooseImage.uplaodImage(ImageSource.gallery);
+                            if (chooseImage.imgPath != null) {
+                              final storageRef = FirebaseStorage.instance
+                                  .ref(chooseImage.imgName);
+                              await storageRef.putFile(chooseImage.imgPath!);
+                              url = await storageRef.getDownloadURL();
+                              users.doc(credential.uid).update({
+                                "imgUrl": url,
+                              });
+                            }
                           },
                           icon: const Icon(
                             Icons.add_a_photo,
@@ -135,8 +146,8 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               Center(
                 child: TextButton(
-                  onPressed: ()  {
-                     credential.delete();
+                  onPressed: () {
+                    credential.delete();
                     if (!mounted) return;
                     Navigator.pop(context);
                     setState(() {});

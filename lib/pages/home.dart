@@ -8,30 +8,46 @@ import 'package:flower_app/widgets/custom_action_appbar.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../provider/cart_provider.dart';
+import '../shared/user_image.dart';
 
-class Home extends StatelessWidget {
+class Home extends StatefulWidget {
   const Home({super.key});
 
   @override
+  State<Home> createState() => _HomeState();
+}
+
+class _HomeState extends State<Home> {
+  @override
   Widget build(BuildContext context) {
     final user = FirebaseAuth.instance.currentUser!;
-    // final username = FirebaseFirestore.instance.
+
+    final username = FirebaseFirestore.instance.collection('users');
+
     return Scaffold(
       drawer: Drawer(
         child: Column(
           children: [
-            UserAccountsDrawerHeader(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/test.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              currentAccountPicture: CircleAvatar(
-                backgroundImage: NetworkImage(user.photoURL ?? "no Image"),
-              ),
-              accountName: Text(user.displayName ?? "no name"),
-              accountEmail: Text(user.email ?? "No email"),
+            FutureBuilder<DocumentSnapshot>(
+              future: username.doc(user.uid).get(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.done) {
+                  Map<String, dynamic> data =
+                      snapshot.data!.data() as Map<String, dynamic>;
+                  return UserAccountsDrawerHeader(
+                    decoration: const BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage('assets/images/test.jpg'),
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    currentAccountPicture: const ImageUser(),
+                    accountName: Text(data['username']),
+                    accountEmail: Text(user.email ?? "No email"),
+                  );
+                }
+                return const Text('Loading ...');
+              },
             ),
             Column(
               children: [

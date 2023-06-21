@@ -24,7 +24,6 @@ class _SignInState extends State<SignIn> {
   bool isNotVisible = true;
   @override
   void dispose() {
-    // TODO: implement dispose
     emailController.dispose();
     passwordController.dispose();
 
@@ -94,9 +93,8 @@ class _SignInState extends State<SignIn> {
                 ElevatedButton(
                   onPressed: () async {
                     try {
-                      setState(() {
-                        isLoading = true;
-                      });
+                      isLoading = true;
+                      setState(() {});
                       await loginUser();
                     } on FirebaseAuthException catch (e) {
                       if (e.code == 'user-not-found') {
@@ -108,10 +106,8 @@ class _SignInState extends State<SignIn> {
                     } catch (e) {
                       showSnackBar(context, e.toString());
                     }
-
-                    setState(() {
-                      isLoading = false;
-                    });
+                    isLoading = false;
+                    setState(() {});
                   },
                   style: ButtonStyle(
                     backgroundColor: const MaterialStatePropertyAll(btnGreen),
@@ -226,7 +222,7 @@ class _SignInState extends State<SignIn> {
   }
 
   Future<void> loginUser() async {
-    final credential = await FirebaseAuth.instance.signInWithEmailAndPassword(
+    await FirebaseAuth.instance.signInWithEmailAndPassword(
         email: emailController.text, password: passwordController.text);
   }
 }
